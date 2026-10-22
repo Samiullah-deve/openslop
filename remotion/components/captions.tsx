@@ -31,16 +31,22 @@ export function Captions({
 	const frame = useCurrentFrame();
 	const { fps, height } = useVideoConfig();
 
-	const { words, startTimes } = useMemo(
+	const { words, startTimes, lineIds } = useMemo(
 		() => ({
 			words: timestamps.map(({ text }) => text),
 			startTimes: timestamps.map(({ start }) => start),
+			lineIds: timestamps.map(({ line }) => line),
 		}),
 		[timestamps],
 	);
 
 	const index = activeWordIndex(startTimes, toSeconds(frame, fps));
-	const line = captionLineAt(words.length, index, style.maxWordsPerLine);
+	const line = captionLineAt(
+		words.length,
+		index,
+		style.maxWordsPerLine,
+		lineIds,
+	);
 
 	return (
 		<AbsoluteFill>
@@ -48,7 +54,7 @@ export function Captions({
 			<Fragment key={line.start}>
 				{renderLine({
 					style,
-					words: captionWordsAt(words, index, style),
+					words: captionWordsAt(words, index, style, lineIds),
 					fontSizePx: captionFontSizePx(style.fontSize, height),
 					ownerId,
 					from: firstWord + line.start,

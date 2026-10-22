@@ -25,7 +25,11 @@ function spread(
 	});
 }
 
-/** Kept words keep their timings; changed ones share the time of those they replace, and an added one shares the word before it. */
+/**
+ * The typed text becomes one caption line, however many words it has. Kept
+ * words keep their timings; changed ones share the time of those they replace,
+ * and an added one shares the word before it.
+ */
 export function reviseWords(
 	words: readonly TextTimestamp[],
 	from: number,
@@ -51,11 +55,14 @@ export function reviseWords(
 		first && last && added.length > 0
 			? spread(added, { start: first.start, end: last.end })
 			: [];
+	const line = words[from]?.line ?? words[from]?.start;
 	return [
 		...words.slice(0, from + head),
 		...retimed,
 		...words.slice(to - tail),
-	];
+	].map((word, at) =>
+		at >= from && at < from + after.length ? { ...word, line } : word,
+	);
 }
 
 export function reviseCaptions(

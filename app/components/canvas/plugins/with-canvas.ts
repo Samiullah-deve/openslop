@@ -8,12 +8,14 @@ import { withLayout } from "./with-layout";
 import { withNodeId } from "./with-node-id";
 import { withOSMLClipboard } from "./with-osml-clipboard";
 import { withScenes } from "./with-scenes";
+import { withSourced } from "./with-sourced";
 
 export const withCanvas: (editor: CanvasEditor) => CanvasEditor = flow(
 	withReact,
 	withLayout,
 	withAssets,
 	withCharacterRefs,
+	withSourced,
 	withScenes,
 	withFlatPaste,
 	withNodeId,

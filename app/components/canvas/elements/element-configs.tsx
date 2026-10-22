@@ -40,7 +40,8 @@ interface ElementConfig extends ContentSpec {
 	iconBgClass: string;
 	/** Text color for the type pill's icon + label, keyed to the media-type color. */
 	colorClass: string;
-	placeholder: string;
+	/** Absent on a type with no prompt. */
+	placeholder?: string;
 	/** Beside the type pill. */
 	lead?: ElementControl;
 	/** Beside the history button. */
@@ -105,7 +106,6 @@ const PRESENTATION: Record<ContentType, ElementPresentation> = {
 		Icon: Captions,
 		iconBgClass: "bg-media-captions/15",
 		colorClass: "text-media-captions",
-		placeholder: "Names to spell right, if any, like Lyra, Moonhollow...",
 	},
 };
 

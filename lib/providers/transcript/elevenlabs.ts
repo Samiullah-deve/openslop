@@ -11,9 +11,8 @@ import type { RawTranscript, TranscriptRequest } from "./base";
 import { validateElevenLabsKey } from "../elevenlabs";
 import type { TranscriptProvider } from "../types";
 
-/** ElevenLabs reports no per-request cost; batch Scribe is $0.22 an hour, keyterms $0.05 more. */
+/** ElevenLabs reports no per-request cost; batch Scribe is $0.22 an hour. */
 const USD_PER_HOUR = 0.22;
-const KEYTERMS_USD_PER_HOUR = 0.05;
 
 const SCRIBE_MODELS: readonly string[] = Object.values(
 	SpeechToTextConvertRequestModelId,
@@ -21,13 +20,6 @@ const SCRIBE_MODELS: readonly string[] = Object.values(
 
 const isScribeModel = (id: string): id is SpeechToTextConvertRequestModelId =>
 	SCRIBE_MODELS.includes(id);
-
-/** The prompt lists the words to listen for, one per comma or line. */
-const keytermsOf = (prompt: string): string[] =>
-	prompt
-		.split(/[,\n]/)
-		.map((term) => term.trim())
-		.filter(Boolean);
 
 /** Spoken words only: the gaps between them and sounds like laughter are not captions. */
 const toTimestamps = (
@@ -62,26 +54,22 @@ export class ElevenLabsTranscript
 		return [timestampsFile(result.textTimestamps)];
 	}
 
-	protected async _generate({ prompt, mediaUrl, model }: TranscriptRequest) {
+	protected async _generate({ mediaUrl, model }: TranscriptRequest) {
 		if (!isScribeModel(model))
 			throw new Error(`ElevenLabs has no speech-to-text model "${model}"`);
-		const keyterms = keytermsOf(prompt);
 		const { words, audioDurationSecs } = await this.client.speechToText.convert(
 			{
 				modelId: model,
 				cloudStorageUrl: mediaUrl,
 				timestampsGranularity: "word",
 				tagAudioEvents: false,
-				...(keyterms.length > 0 && { keyterms }),
 			},
 		);
 		const textTimestamps = toTimestamps(words);
 		const durationSec = audioDurationSecs ?? textTimestamps.at(-1)?.end ?? 0;
-		const usdPerHour =
-			USD_PER_HOUR + (keyterms.length > 0 ? KEYTERMS_USD_PER_HOUR : 0);
 		return {
 			textTimestamps,
-			costUsd: (durationSec / 3600) * usdPerHour,
+			costUsd: (durationSec / 3600) * USD_PER_HOUR,
 			metadata: { durationSec },
 		};
 	}

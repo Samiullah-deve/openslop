@@ -135,6 +135,8 @@ export const TextTimestampSchema = z.object({
 	text: z.string(),
 	start: z.number(),
 	end: z.number(),
+	/** Words typed as one caption line share an id, and stay one line. */
+	line: z.number().optional(),
 });
 
 export type TextTimestamp = z.infer<typeof TextTimestampSchema>;
@@ -218,7 +220,7 @@ export type TTSGenerateParams = ConnectorGenerateParams & {
 	format?: string;
 };
 
-/** The prompt lists words to listen for; the media is what to transcribe, found by a plugin. */
+/** The media to transcribe, found by a plugin. */
 export type TranscriptGenerateParams = ConnectorGenerateParams & {
 	mediaUrl?: string;
 };

@@ -99,7 +99,7 @@ export const TTS_FIELDS = {
 
 export const AUDIO_FIELDS = optionalDurationSeconds;
 
-/** The prompt only lists words to listen for, so a transcript may go without one. */
+/** A transcript is of its media alone, so it takes no prompt. */
 export const TRANSCRIPT_FIELDS = {
 	prompt: z.string().default(""),
 	mediaUrl: z.url({ error: "mediaUrl must be an HTTP(S) URL" }),

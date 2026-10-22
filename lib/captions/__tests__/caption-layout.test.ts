@@ -83,3 +83,23 @@ describe("captionLineAt", () => {
 		expect(captionLineAt(7, 6, 3)).toEqual({ start: 6, end: 7 });
 	});
 });
+
+describe("captionLineAt with typed lines", () => {
+	const ids = [7, 7, 7, 7, 7, undefined, undefined, undefined, undefined, 9, 9];
+
+	it("keeps a typed line whole, however long", () => {
+		expect(captionLineAt(ids.length, 2, 3, ids)).toEqual({ start: 0, end: 5 });
+	});
+
+	it("counts fixed-size lines from the end of the typed line before", () => {
+		expect(captionLineAt(ids.length, 5, 3, ids)).toEqual({ start: 5, end: 8 });
+		expect(captionLineAt(ids.length, 8, 3, ids)).toEqual({ start: 8, end: 9 });
+	});
+
+	it("ends untouched lines where the next typed line starts", () => {
+		expect(captionLineAt(ids.length, 10, 3, ids)).toEqual({
+			start: 9,
+			end: 11,
+		});
+	});
+});

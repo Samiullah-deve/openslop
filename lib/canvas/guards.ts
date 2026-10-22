@@ -32,6 +32,10 @@ export const isCharacterRef = (node: unknown): node is CharacterRefElement =>
 export const isSpeech = (node: unknown): boolean =>
 	isContentElement(node) && CONTENT_TYPES[node.type].connector === "tts";
 
+/** Generates from the element above it, so it has no prompt to type. */
+export const isSourced = (node: unknown): node is ContentElement =>
+	isContentElement(node) && "source" in CONTENT_TYPES[node.type];
+
 export const isCaptionableType = (type: ContentType): boolean =>
 	"captionable" in CONTENT_TYPES[type];
 

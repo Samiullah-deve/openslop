@@ -14,17 +14,31 @@ export function activeWordIndex(startTimes: number[], seconds: number): number {
 }
 
 /**
- * The span of words on the line `wordIndex` sits on. Lines are fixed-size runs
- * of `maxWordsPerLine`, so the line is a slice rather than a lookup.
+ * The span of words on the line `wordIndex` sits on. Words sharing a line id
+ * were typed as one line and stay one; the rest run in fixed-size lines of
+ * `maxWordsPerLine`, counted from the last typed line.
  */
 export function captionLineAt(
 	wordCount: number,
 	wordIndex: number,
 	maxWordsPerLine: number,
+	lineIds: readonly (number | undefined)[] = [],
 ): { start: number; end: number } {
-	const perLine = Math.max(1, Math.floor(maxWordsPerLine));
-	const start = Math.floor(wordIndex / perLine) * perLine;
-	return { start, end: Math.min(start + perLine, wordCount) };
+	if (wordIndex < 0 || wordIndex >= wordCount) return { start: 0, end: 0 };
+	const id = lineIds[wordIndex];
+	const sameLine = (at: number) => lineIds[at] === id;
+	let start = wordIndex;
+	while (start > 0 && sameLine(start - 1)) start -= 1;
+	if (id === undefined) {
+		const perLine = Math.max(1, Math.floor(maxWordsPerLine));
+		start += Math.floor((wordIndex - start) / perLine) * perLine;
+		let end = start;
+		while (end < wordCount && end < start + perLine && sameLine(end)) end += 1;
+		return { start, end };
+	}
+	let end = wordIndex + 1;
+	while (end < wordCount && sameLine(end)) end += 1;
+	return { start, end };
 }
 
 /**
@@ -38,6 +52,7 @@ export function captionWordsAt(
 		maxWordsPerLine,
 		reveal,
 	}: { maxWordsPerLine: number; reveal: CaptionReveal },
+	lineIds: readonly (number | undefined)[] = [],
 ): CaptionWord[] {
 	if (wordIndex < 0 || wordIndex >= words.length) return [];
 
@@ -45,6 +60,7 @@ export function captionWordsAt(
 		words.length,
 		wordIndex,
 		maxWordsPerLine,
+		lineIds,
 	);
 	const activeInLine = wordIndex - start;
 
