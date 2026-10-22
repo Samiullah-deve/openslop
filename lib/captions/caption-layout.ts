@@ -13,11 +13,7 @@ export function activeWordIndex(startTimes: number[], seconds: number): number {
 	return sortedLastIndex(startTimes, seconds) - 1;
 }
 
-/**
- * The span of words on the line `wordIndex` sits on. Words sharing a line id
- * were typed as one line and stay one; the rest run in fixed-size lines of
- * `maxWordsPerLine`, counted from the last typed line.
- */
+/** A typed line (shared line id) stays whole; other words run `maxWordsPerLine` to a line from the last typed one. */
 export function captionLineAt(
 	wordCount: number,
 	wordIndex: number,

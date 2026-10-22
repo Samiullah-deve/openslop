@@ -66,7 +66,7 @@ function EditableCaptionLine({
 	return (
 		<CaptionOverlay
 			{...overlay}
-			lineProps={{ className: `${LINE_CLASS} w-full outline-[0.06em]` }}
+			lineProps={{ className: `${LINE_CLASS} outline-[0.06em]` }}
 		>
 			<input
 				autoFocus
@@ -82,11 +82,11 @@ function EditableCaptionLine({
 						event.currentTarget.blur();
 				}}
 				style={{
+					font: "inherit",
 					...captionWordStyle(style.base),
-					width: "100%",
+					fieldSizing: "content",
 					border: "none",
 					outline: "none",
-					font: "inherit",
 					textAlign: "inherit",
 					textTransform: "inherit",
 				}}

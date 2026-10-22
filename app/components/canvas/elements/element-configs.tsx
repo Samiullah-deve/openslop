@@ -9,7 +9,6 @@ import {
 	Waveform,
 	type IconComponent,
 } from "@/components/ui/icon";
-import { isCaptionableType } from "@/lib/canvas/guards";
 import {
 	CONTENT_TYPES,
 	type ContentElement,
@@ -17,7 +16,6 @@ import {
 	type ContentSpec,
 } from "@/lib/canvas/types";
 import { AnimateButton } from "./animate-button";
-import { CaptionButton } from "./caption-button";
 import { CharacterSwitcher } from "./character-switcher";
 import {
 	AudioUploadButton,
@@ -112,15 +110,7 @@ const PRESENTATION: Record<ContentType, ElementPresentation> = {
 export const ELEMENT_CONFIGS = Object.fromEntries(
 	(Object.keys(CONTENT_TYPES) as ContentType[]).map((type) => [
 		type,
-		{
-			type,
-			...CONTENT_TYPES[type],
-			...PRESENTATION[type],
-			actions: [
-				...(PRESENTATION[type].actions ?? []),
-				...(isCaptionableType(type) ? [CaptionButton] : []),
-			],
-		},
+		{ type, ...CONTENT_TYPES[type], ...PRESENTATION[type] },
 	]),
 ) as { [T in ContentType]: ElementConfig & (typeof CONTENT_TYPES)[T] };
 

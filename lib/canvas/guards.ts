@@ -36,11 +36,8 @@ export const isSpeech = (node: unknown): boolean =>
 export const isSourced = (node: unknown): node is ContentElement =>
 	isContentElement(node) && "source" in CONTENT_TYPES[node.type];
 
-export const isCaptionableType = (type: ContentType): boolean =>
-	"captionable" in CONTENT_TYPES[type];
-
 export const isCaptionable = (node: unknown): node is ContentElement =>
-	isContentElement(node) && isCaptionableType(node.type);
+	isContentElement(node) && "captionable" in CONTENT_TYPES[node.type];
 
 export const isAssetType = (type: string): type is AssetType =>
 	Object.hasOwn(ASSET_TYPES, type);
