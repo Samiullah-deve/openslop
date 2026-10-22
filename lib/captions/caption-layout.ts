@@ -14,9 +14,22 @@ export function activeWordIndex(startTimes: number[], seconds: number): number {
 }
 
 /**
- * The words on the line `wordIndex` sits on. Lines are fixed-size runs of
- * `maxWordsPerLine`, so the line is a slice rather than a lookup. The whole
- * line is always returned so its footprint never shifts mid-reveal.
+ * The span of words on the line `wordIndex` sits on. Lines are fixed-size runs
+ * of `maxWordsPerLine`, so the line is a slice rather than a lookup.
+ */
+export function captionLineAt(
+	wordCount: number,
+	wordIndex: number,
+	maxWordsPerLine: number,
+): { start: number; end: number } {
+	const perLine = Math.max(1, Math.floor(maxWordsPerLine));
+	const start = Math.floor(wordIndex / perLine) * perLine;
+	return { start, end: Math.min(start + perLine, wordCount) };
+}
+
+/**
+ * The words on the line `wordIndex` sits on. The whole line is always returned
+ * so its footprint never shifts mid-reveal.
  */
 export function captionWordsAt(
 	words: readonly string[],
@@ -28,11 +41,14 @@ export function captionWordsAt(
 ): CaptionWord[] {
 	if (wordIndex < 0 || wordIndex >= words.length) return [];
 
-	const perLine = Math.max(1, Math.floor(maxWordsPerLine));
-	const lineStart = Math.floor(wordIndex / perLine) * perLine;
-	const activeInLine = wordIndex - lineStart;
+	const { start, end } = captionLineAt(
+		words.length,
+		wordIndex,
+		maxWordsPerLine,
+	);
+	const activeInLine = wordIndex - start;
 
-	return words.slice(lineStart, lineStart + perLine).map((text, index) => ({
+	return words.slice(start, end).map((text, index) => ({
 		text,
 		active: index === activeInLine,
 		hidden: reveal === "word" && index > activeInLine,

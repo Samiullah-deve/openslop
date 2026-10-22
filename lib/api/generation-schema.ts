@@ -99,6 +99,12 @@ export const TTS_FIELDS = {
 
 export const AUDIO_FIELDS = optionalDurationSeconds;
 
+/** The prompt only lists words to listen for, so a transcript may go without one. */
+export const TRANSCRIPT_FIELDS = {
+	prompt: z.string().default(""),
+	mediaUrl: z.url({ error: "mediaUrl must be an HTTP(S) URL" }),
+} as const;
+
 const INVALID_MAX_TOKENS = "maxTokens must be a positive integer";
 
 export const LLM_FIELDS = {

@@ -1,14 +1,18 @@
-import { useMemo } from "react";
+import { Fragment, use, useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import { CaptionOverlay } from "@/components/captions/caption-overlay";
+import { CaptionLineContext } from "@/components/captions/caption-line";
 import { createRequiredContext } from "@/lib/components/create-required-context";
-import type { TextTimestamp } from "@/lib/connectors/types";
-import { activeWordIndex, captionWordsAt } from "@/lib/captions/caption-layout";
+import {
+	activeWordIndex,
+	captionLineAt,
+	captionWordsAt,
+} from "@/lib/captions/caption-layout";
 import {
 	captionFontSizePx,
 	type CaptionStyle,
 } from "@/lib/captions/caption-style";
 import { toSeconds } from "@/lib/render/frames";
+import type { ResolvedCaptions } from "@/lib/render/types";
 
 // Caption styling applies to every caption in the composition, so it rides a
 // provider rather than threading through the sequence layers that never read it.
@@ -17,8 +21,13 @@ const [CaptionStyleContext, useCaptionStyle] =
 
 export const CaptionStyleProvider = CaptionStyleContext.Provider;
 
-export function Captions({ timestamps }: { timestamps: TextTimestamp[] }) {
+export function Captions({
+	captions: { ownerId, firstWord, words: timestamps },
+}: {
+	captions: ResolvedCaptions;
+}) {
 	const style = useCaptionStyle();
+	const renderLine = use(CaptionLineContext);
 	const frame = useCurrentFrame();
 	const { fps, height } = useVideoConfig();
 
@@ -31,14 +40,21 @@ export function Captions({ timestamps }: { timestamps: TextTimestamp[] }) {
 	);
 
 	const index = activeWordIndex(startTimes, toSeconds(frame, fps));
+	const line = captionLineAt(words.length, index, style.maxWordsPerLine);
 
 	return (
 		<AbsoluteFill>
-			<CaptionOverlay
-				style={style}
-				words={captionWordsAt(words, index, style)}
-				fontSizePx={captionFontSizePx(style.fontSize, height)}
-			/>
+			{/* A new line starts a fresh edit. */}
+			<Fragment key={line.start}>
+				{renderLine({
+					style,
+					words: captionWordsAt(words, index, style),
+					fontSizePx: captionFontSizePx(style.fontSize, height),
+					ownerId,
+					from: firstWord + line.start,
+					to: firstWord + line.end,
+				})}
+			</Fragment>
 		</AbsoluteFill>
 	);
 }

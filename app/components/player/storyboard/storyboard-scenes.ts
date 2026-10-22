@@ -1,11 +1,11 @@
 import { isForeground } from "@/lib/canvas/guards";
-import type { ContentElement, Scene } from "@/lib/canvas/types";
+import type { ForegroundElement, Scene } from "@/lib/canvas/types";
 import type { SceneSegment } from "@/lib/render/scene-segments";
 
 export type StoryboardScene = {
 	scene: Scene;
 	sceneIndex: number;
-	foreground: ContentElement | null;
+	foreground: ForegroundElement | null;
 	/** Seek target, or null while the scene has nothing on the timeline yet. */
 	start: number | null;
 };

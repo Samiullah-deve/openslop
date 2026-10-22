@@ -4,10 +4,16 @@ import { z } from "zod";
 import type { ConnectorModels } from "@/lib/connectors/models";
 import type { AssetConnectorType } from "@/lib/connectors/types";
 
-export type ResultKind = "image" | "video" | "audio";
+export type MediaKind = "image" | "video" | "audio";
+
+/** Text is word timings, with no media of its own. */
+export type ResultKind = MediaKind | "text";
 
 /** How an element behaves on the rendered timeline. An overlay is speech: it holds the screen for as long as it talks. */
-export type ElementRole = "foreground" | "background" | "overlay" | "effect";
+export type TimelineRole = "foreground" | "background" | "overlay" | "effect";
+
+/** A caption holds no time of its own: it plays over the element it captions. */
+export type ElementRole = TimelineRole | "caption";
 
 export type LayerType = "audio" | "visual";
 
@@ -17,6 +23,10 @@ export type ContentSpec = {
 	outputKind: ResultKind;
 	role: ElementRole;
 	layer: LayerType;
+	/** Set on a type that generates from the element its plugins depend on, not a prompt: what to do when there is none. */
+	source?: string;
+	/** Has sound worth putting words to, so a captions element can sit under it. */
+	captionable?: true;
 };
 
 export const CONTENT_TYPES = {
@@ -43,6 +53,7 @@ export const CONTENT_TYPES = {
 		outputKind: "video",
 		role: "foreground",
 		layer: "visual",
+		captionable: true,
 	},
 	sound: {
 		connector: "sfx",
@@ -55,10 +66,30 @@ export const CONTENT_TYPES = {
 		outputKind: "audio",
 		role: "background",
 		layer: "audio",
+		captionable: true,
+	},
+	captions: {
+		connector: "transcript",
+		outputKind: "text",
+		role: "caption",
+		layer: "audio",
+		source: "Place this right under a video or music element",
 	},
 } as const satisfies Record<string, ContentSpec>;
 
 export type ContentType = keyof typeof CONTENT_TYPES;
+
+type ContentTypeWhere<K extends "outputKind" | "role", V> = {
+	[T in ContentType]: (typeof CONTENT_TYPES)[T][K] extends V ? T : never;
+}[ContentType];
+
+/** The types with media of their own, which is what the rendered timeline places. */
+export type MediaType = ContentTypeWhere<"outputKind", MediaKind>;
+
+export type ForegroundType = ContentTypeWhere<"role", "foreground">;
+
+export const isMediaType = (type: ContentType): type is MediaType =>
+	CONTENT_TYPES[type].outputKind !== "text";
 
 const ALL_CONTENT_TYPES = Object.keys(CONTENT_TYPES) as ContentType[];
 
@@ -108,7 +139,9 @@ export const isToggleOn = (value: string | undefined): boolean =>
 export const SCENE_TYPE = "scene" as const;
 
 /** What every element type declares: the connector it generates on, if any. */
-type ElementSpec = { connector?: AssetConnectorType };
+type ElementSpec = Pick<ContentSpec, "source"> & {
+	connector?: AssetConnectorType;
+};
 
 /** Tiles ahead of the scenes; one with a connector generates like content does. */
 export const ASSET_TYPES = {
@@ -178,6 +211,8 @@ export type ElementOf<T extends ElementType> = SplitAttributes & {
 };
 
 export type ContentElement = ElementOf<ContentType>;
+
+export type ForegroundElement = ElementOf<ForegroundType>;
 
 export type AssetElement<T extends AssetType = AssetType> = ElementOf<T>;
 

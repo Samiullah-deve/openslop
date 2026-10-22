@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONTENT_TYPES, type ContentType } from "@/lib/canvas/types";
+import { CONTENT_TYPES, type MediaType } from "@/lib/canvas/types";
 import { isBlankScene } from "@/lib/render/blank-scene";
 import type { ResolvedElement } from "@/lib/render/types";
 import { layoutOf } from "@/lib/render/__tests__/_layout";
@@ -7,7 +7,7 @@ import { buildTimelineRows, packLanes } from "../timeline-rows";
 
 function el(
 	id: string,
-	type: ContentType,
+	type: MediaType,
 	overrides: Partial<ResolvedElement> = {},
 ): ResolvedElement {
 	const { role, layer } = CONTENT_TYPES[type];

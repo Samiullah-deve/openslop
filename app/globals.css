@@ -218,6 +218,7 @@
 	--media-music: #7c3aed;
 	--media-sound: #059669;
 	--media-narration: var(--grey-600);
+	--media-captions: #db2777;
 
 	/* Texture + effects */
 	--grain-opacity: 0.2;
@@ -339,6 +340,7 @@
 	--media-music: #a78bfa;
 	--media-sound: #34d399;
 	--media-narration: var(--grey-600);
+	--media-captions: #f472b6;
 
 	--grain-opacity: 0.26;
 	--grain-bg-opacity: 0.32;
@@ -422,6 +424,7 @@
 	--color-media-music: var(--media-music);
 	--color-media-sound: var(--media-sound);
 	--color-media-narration: var(--media-narration);
+	--color-media-captions: var(--media-captions);
 
 	--font-sans: var(--font-slopella);
 	--font-body: var(--font-inter);

@@ -5,14 +5,14 @@ import {
 	Waveform,
 	type IconComponent,
 } from "@/components/ui/icon";
-import type { ElementRole, LayerType } from "@/lib/canvas/types";
+import type { LayerType, TimelineRole } from "@/lib/canvas/types";
 import type { Sequence, RenderLayout } from "@/lib/render/types";
 
 export type TimelineClip = Sequence & { key: string };
 
 export type TimelineRow = {
 	key: string;
-	id: ElementRole;
+	id: TimelineRole;
 	label: string;
 	icon: IconComponent;
 	kind: LayerType;
@@ -23,7 +23,7 @@ export type TimelineRow = {
 
 /** One lane per role, in stacking order, mirroring `buildRenderLayout`'s cases. */
 const ROWS: Record<
-	ElementRole,
+	TimelineRole,
 	{ label: string; icon: IconComponent; kind: LayerType; numbered: boolean }
 > = {
 	foreground: { label: "Visuals", icon: Film, kind: "visual", numbered: true },
@@ -45,7 +45,10 @@ function trimOverlap(series: Sequence[], overlapSec: number): Sequence[] {
 	);
 }
 
-function sequencesForRole(layout: RenderLayout, role: ElementRole): Sequence[] {
+function sequencesForRole(
+	layout: RenderLayout,
+	role: TimelineRole,
+): Sequence[] {
 	if (role === "foreground")
 		return trimOverlap(layout.series, layout.transitionDurationSec);
 	return Object.values(layout.sequences)
@@ -89,7 +92,7 @@ function withinVideo(sequences: Sequence[], totalSec: number): Sequence[] {
 
 /** Roles with nothing to show are dropped. */
 export function buildTimelineRows(layout: RenderLayout): TimelineRow[] {
-	const roles = Object.keys(ROWS) as ElementRole[];
+	const roles = Object.keys(ROWS) as TimelineRole[];
 	return roles.flatMap((role) => {
 		const lanes = packLanes(
 			withinVideo(sequencesForRole(layout, role), layout.totalDurationSec),

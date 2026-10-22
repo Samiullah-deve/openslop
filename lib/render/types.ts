@@ -1,13 +1,21 @@
-import type { ContentType, ElementRole, LayerType } from "@/lib/canvas/types";
+import type { LayerType, MediaType, TimelineRole } from "@/lib/canvas/types";
 import type { TextTimestamp } from "@/lib/connectors/types";
 import type { CaptionStyle } from "../captions/caption-style";
 import type { MotionEffect } from "./motion-effect-names";
 import type { TransitionType } from "./transitions";
 
+/** The words a clip shows, from its trim start, and the element whose result holds them. */
+export type ResolvedCaptions = {
+	ownerId: string;
+	/** Where `words` start in the owner's own word list, past those the trim cut. */
+	firstWord: number;
+	words: TextTimestamp[];
+};
+
 export type ResolvedElement = {
 	id: string;
-	type: ContentType;
-	role: ElementRole;
+	type: MediaType;
+	role: TimelineRole;
 	layer: LayerType;
 	/** The scene that holds it, and its place in the document. */
 	sceneId: string;
@@ -23,7 +31,7 @@ export type ResolvedElement = {
 	loop: boolean;
 	volume: number;
 	motion: MotionEffect;
-	captionTimestamps?: TextTimestamp[];
+	captions?: ResolvedCaptions;
 };
 
 export type Sequence = {
@@ -36,7 +44,7 @@ export type Sequence = {
 
 export type RenderLayout = {
 	series: Sequence[];
-	sequences: Partial<Record<ContentType, Sequence[]>>;
+	sequences: Partial<Record<MediaType, Sequence[]>>;
 	fps: number;
 	width: number;
 	height: number;

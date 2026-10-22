@@ -38,10 +38,26 @@ const blackBg: React.CSSProperties = { backgroundColor: "black" };
 
 const fallbackHtml5AudioProps = { crossOrigin: "anonymous" } as const;
 
-function AudioSequence({
+/** Captions run for the clip's span, short of the tail the next scene's transition steals. */
+function CaptionsTrack({
 	element,
 	transitionDurationSec,
 }: SequenceContentProps) {
+	const { durationInFrames, fps } = useVideoConfig();
+	if (!element.captions) return null;
+	return (
+		<Sequence
+			durationInFrames={Math.max(
+				1,
+				durationInFrames - toFrames(transitionDurationSec, fps),
+			)}
+		>
+			<Captions captions={element.captions} />
+		</Sequence>
+	);
+}
+
+function AudioSequence({ element }: { element: ResolvedElement }) {
 	const { durationInFrames, fps } = useVideoConfig();
 	const gain = volumeToGain(element.volume);
 	const fadeFrames = toFrames(audioFadeSec(element), fps);
@@ -51,24 +67,12 @@ function AudioSequence({
 		[gain, envelopeFrames, fadeFrames],
 	);
 	return (
-		<>
-			<Audio
-				src={element.url}
-				trimBefore={toFrames(element.trimStartSec, fps)}
-				volume={volume}
-				fallbackHtml5AudioProps={fallbackHtml5AudioProps}
-			/>
-			{element.captionTimestamps && (
-				<Sequence
-					durationInFrames={Math.max(
-						1,
-						durationInFrames - toFrames(transitionDurationSec, fps),
-					)}
-				>
-					<Captions timestamps={element.captionTimestamps} />
-				</Sequence>
-			)}
-		</>
+		<Audio
+			src={element.url}
+			trimBefore={toFrames(element.trimStartSec, fps)}
+			volume={volume}
+			fallbackHtml5AudioProps={fallbackHtml5AudioProps}
+		/>
 	);
 }
 
@@ -106,10 +110,7 @@ type SequenceContentProps = {
 	transitionDurationSec: number;
 };
 
-function SequenceContent({
-	element,
-	transitionDurationSec,
-}: SequenceContentProps) {
+function ElementMedia({ element }: { element: ResolvedElement }) {
 	switch (element.layer) {
 		case "visual":
 			return (
@@ -122,13 +123,17 @@ function SequenceContent({
 				</MotionLayer>
 			);
 		case "audio":
-			return (
-				<AudioSequence
-					element={element}
-					transitionDurationSec={transitionDurationSec}
-				/>
-			);
+			return <AudioSequence element={element} />;
 	}
+}
+
+function SequenceContent(props: SequenceContentProps) {
+	return (
+		<>
+			<ElementMedia element={props.element} />
+			<CaptionsTrack {...props} />
+		</>
+	);
 }
 
 export const VideoComposition: React.FC<RenderLayout> = ({

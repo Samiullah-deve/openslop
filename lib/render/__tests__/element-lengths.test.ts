@@ -3,7 +3,7 @@ import type { Descendant } from "slate";
 import type { ContentType } from "@/lib/canvas/types";
 import { measureElementLengths, measureRuntime } from "../element-lengths";
 import type { ResolvedElement } from "../types";
-import { CONTENT_TYPES } from "@/lib/canvas/types";
+import { CONTENT_TYPES, isMediaType } from "@/lib/canvas/types";
 import { secondsForWords } from "@/lib/project/video-length";
 import { layoutOf } from "./_layout";
 import { splitAttributes } from "@/lib/canvas/element-attributes";
@@ -166,10 +166,12 @@ describe("against buildRenderLayout", () => {
 		node: ReturnType<typeof element>,
 		durationSec: number,
 	): ResolvedElement => {
-		const spec = CONTENT_TYPES[node.type];
+		const { type } = node;
+		if (!isMediaType(type)) throw new Error(`${type} has no media`);
+		const spec = CONTENT_TYPES[type];
 		return {
 			id: node.id,
-			type: node.type,
+			type,
 			role: spec.role,
 			layer: spec.layer,
 			sceneId: "s",

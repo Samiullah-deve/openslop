@@ -3,6 +3,7 @@ import type { AssetResult } from "@/lib/connectors/types";
 import { inputsFor } from "./_graph";
 import {
 	activeVersionIndex,
+	versionKey,
 	VersionLog,
 	type ElementVersion,
 } from "../versions";
@@ -122,5 +123,23 @@ describe("activeVersionIndex", () => {
 			pinned: false,
 		};
 		expect(activeVersionIndex(versions, snapshot)).toBe(-1);
+	});
+});
+
+describe("versionKey", () => {
+	it("tells an edit to a result's words from the result it edits", () => {
+		const spoken = {
+			audioUrl: "line.wav",
+			durationSec: 1,
+			textTimestamps: [{ text: "hi", start: 0, end: 1 }],
+		};
+		const edited = {
+			...spoken,
+			textTimestamps: [{ text: "hey", start: 0, end: 1 }],
+		};
+		const of = (words: AssetResult) =>
+			versionKey({ inputs: inputsFor("hi"), result: words, pinned: false });
+
+		expect(of(edited)).not.toBe(of(spoken));
 	});
 });

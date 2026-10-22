@@ -67,5 +67,9 @@ export function osmlSpec(language: string): string {
 		- Change the music every few scenes.
 		- length: ${Object.values(MusicLength).join(", ")}.
 		- loops: how many times it plays back to back (default ${DEFAULT_LOOPS}). Allowed values: ${LOOPS_OPTIONS.join(", ")}. Use more for music that should fill several scenes.
+
+		## <captions>
+		- Captions of what is said or sung in the <video> or <music> right above it. Write it as <captions/> on the very next line, with no body, unless names or invented words need spelling right: then list them comma-separated in the body. Example: <captions>Lyra, Moonhollow</captions>
+		- Add it after every <video> where someone speaks, and after <music> with sung lyrics. Never after speech, which is already captioned.
 	`;
 }

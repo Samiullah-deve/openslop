@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flattenGraph } from "../graph";
+import { flattenGraph, missingInput } from "../graph";
 import { jobNode as node } from "./_graph";
 
 describe("flattenGraph", () => {
@@ -13,5 +13,25 @@ describe("flattenGraph", () => {
 			"left",
 			"right",
 		]);
+	});
+});
+
+describe("missingInput", () => {
+	const captions = (dependsOn = node("vid").dependsOn) => ({
+		...node("cap", [], { prompt: "" }),
+		dependsOn,
+		job: { ...node("cap").job, elementType: "captions" as const },
+	});
+
+	it("asks for a prompt", () => {
+		expect(missingInput(node("a", [], { prompt: "" }))).toBe(
+			"Enter a prompt first",
+		);
+		expect(missingInput(node("a"))).toBeUndefined();
+	});
+
+	it("asks a type that generates from another element for that element, not a prompt", () => {
+		expect(missingInput(captions())).toMatch(/under a video or music/);
+		expect(missingInput(captions({ media: node("vid") }))).toBeUndefined();
 	});
 });

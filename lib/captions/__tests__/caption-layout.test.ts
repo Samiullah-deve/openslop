@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { activeWordIndex, captionWordsAt } from "../caption-layout";
+import {
+	activeWordIndex,
+	captionLineAt,
+	captionWordsAt,
+} from "../caption-layout";
 
 const WORDS = ["one", "two", "three", "four", "five"];
 const text = (words: { text: string }[]) => words.map((w) => w.text);
@@ -67,5 +71,15 @@ describe("captionWordsAt", () => {
 			reveal: "line",
 		});
 		expect(text(words)).toEqual(["four"]);
+	});
+});
+
+describe("captionLineAt", () => {
+	it("spans the run of words the index sits in", () => {
+		expect(captionLineAt(10, 4, 3)).toEqual({ start: 3, end: 6 });
+	});
+
+	it("ends the last line at the last word", () => {
+		expect(captionLineAt(7, 6, 3)).toEqual({ start: 6, end: 7 });
 	});
 });

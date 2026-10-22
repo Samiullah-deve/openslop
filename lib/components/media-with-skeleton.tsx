@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageWithShimmer } from "./image-with-shimmer";
 import { useMediaSettled } from "./use-media-settled";
-import type { ResultKind } from "@/lib/canvas/types";
+import type { MediaKind } from "@/lib/canvas/types";
 
 interface MediaWithSkeletonProps {
-	outputKind: ResultKind;
+	outputKind: MediaKind;
 	src: string;
 	alt: string;
 	videoInteractive?: boolean;

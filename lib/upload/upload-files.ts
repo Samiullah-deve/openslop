@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import type { ResultKind } from "@/lib/canvas/types";
+import type { MediaKind } from "@/lib/canvas/types";
 
 /** What a user may upload. Images are limited to what the export's `ImageDecoder` can decode. */
 export const UPLOAD_KINDS = {
@@ -26,7 +26,7 @@ export const UPLOAD_KINDS = {
 	},
 } as const satisfies Partial<
 	Record<
-		ResultKind,
+		MediaKind,
 		{ noun: string; maxBytes: number; contentTypes: readonly string[] }
 	>
 >;

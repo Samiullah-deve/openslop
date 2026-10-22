@@ -3,7 +3,7 @@ import { toFrames } from "../frames";
 import { isBlankScene } from "../blank-scene";
 import type { BuildLayoutOptions } from "../scene-builder";
 import type { ResolvedElement, Sequence, RenderLayout } from "../types";
-import type { ContentType } from "@/lib/canvas/types";
+import type { MediaType } from "@/lib/canvas/types";
 import { layoutOf } from "./_layout";
 
 // The rendered transition overlap: TRANSITION_DURATION_SEC (0.4s) snapped to the
@@ -13,7 +13,7 @@ const OVERLAP = 10 / 24;
 // effect slides back so it overlaps the tail of the one before it.
 const LOOP_OVERLAP = 4 / 24;
 
-function seqs(layout: RenderLayout, type: ContentType): Sequence[] {
+function seqs(layout: RenderLayout, type: MediaType): Sequence[] {
 	const s = layout.sequences[type];
 	expect(s).toBeDefined();
 	return s as Sequence[];

@@ -10,6 +10,7 @@ import {
 	type ContentType,
 	type ElementType,
 	type CanvasElement,
+	type ForegroundElement,
 	type CharacterRefElement,
 } from "./types";
 
@@ -19,7 +20,7 @@ export const isContentType = (type: string): type is ContentType =>
 export const isContentElement = (node: unknown): node is ContentElement =>
 	Element.isElement(node) && isContentType(node.type);
 
-export const isForeground = (node: unknown): node is ContentElement =>
+export const isForeground = (node: unknown): node is ForegroundElement =>
 	isContentElement(node) && CONTENT_TYPES[node.type].role === "foreground";
 
 export const castsCharacters = (node: unknown): node is ContentElement =>
@@ -30,6 +31,12 @@ export const isCharacterRef = (node: unknown): node is CharacterRefElement =>
 
 export const isSpeech = (node: unknown): boolean =>
 	isContentElement(node) && CONTENT_TYPES[node.type].connector === "tts";
+
+export const isCaptionableType = (type: ContentType): boolean =>
+	"captionable" in CONTENT_TYPES[type];
+
+export const isCaptionable = (node: unknown): node is ContentElement =>
+	isContentElement(node) && isCaptionableType(node.type);
 
 export const isAssetType = (type: string): type is AssetType =>
 	Object.hasOwn(ASSET_TYPES, type);

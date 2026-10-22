@@ -16,7 +16,7 @@ export const VIDEO_FORMAT_NAMES = [
 export const VIDEO_FORMAT_RULES = dedent`
 	First pick the format closest to the request if not already picked by the user. The format decides which elements you write.
 
-	- ${VIDEO_FORMAT.cinematic}: visuals and music tell the story. Only <video> and <music> (with occasional <narration>). Characters speak inside the video prompts. For anime, drama, short films, trailers, music videos and ambient pieces.
+	- ${VIDEO_FORMAT.cinematic}: visuals and music tell the story. Only <video>, <music> and <captions> (with occasional <narration>). Characters speak inside the video prompts. For anime, drama, short films, trailers, music videos and ambient pieces.
 	- ${VIDEO_FORMAT.faceless}: narration and character dialogue tells the story over visuals. Use all elements. For stories read aloud, audiobooks, newscasts, visual dramas, and podcasts with visuals.
 	- ${VIDEO_FORMAT.explainer}: dialogue over video. Use all elements except <image>. The videos make sound, but nobody speaks in them. For explainers, video essays, lessons, lists, documentaries, product tours and walkthroughs.
 

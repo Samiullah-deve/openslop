@@ -226,3 +226,14 @@ describe("parseOSML", () => {
 		expect(flatAttributes(node)).toMatchObject(DEFAULT_VIDEO_MODEL);
 	});
 });
+
+describe("parseOSML captions", () => {
+	it("reads a self-closing captions tag as an empty captions element", () => {
+		const [video, captions] = parseOSML(
+			"<video>A singer on stage.</video>\n<captions/>\n",
+		);
+		expect(video.type).toBe("video");
+		expect(captions.type).toBe("captions");
+		expect(getElementBodyText(captions)).toBe("");
+	});
+});

@@ -88,7 +88,7 @@ describe("osmlSpec", () => {
 
 	it("keeps a film to videos and music, whatever the other element rules say", () => {
 		expect(spec).toContain(
-			"Cinematic: visuals and music tell the story. Only <video> and <music>",
+			"Cinematic: visuals and music tell the story. Only <video>, <music> and <captions>",
 		);
 		expect(spec).toContain("The format decides which elements you write.");
 	});

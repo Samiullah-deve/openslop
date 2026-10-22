@@ -4,6 +4,7 @@ import { getPrimaryUrl } from "@/lib/connectors/asset-url";
 import { AudioResultPreview } from "./audio-result-preview";
 import { MediaResult } from "./results";
 import type { ElementPreviewProps } from "./status";
+import { TranscriptPreview } from "./transcript-preview";
 
 type ElementPreview = (props: ElementPreviewProps) => ReactNode;
 
@@ -33,4 +34,5 @@ export const PREVIEWS_BY_KIND: Record<ResultKind, ElementPreview> = {
 	audio: AudioResultPreview,
 	image: ImageResultPreview,
 	video: VideoResultPreview,
+	text: TranscriptPreview,
 };

@@ -41,13 +41,15 @@ export const PROVIDER_CATALOG: Record<typeof MANAGED_PROVIDER, ProviderMeta> &
 	},
 	cartesia: {
 		name: "Cartesia",
-		description: "Low-latency speech with a large searchable voice library.",
+		description:
+			"Low-latency speech with a large searchable voice library, and fast transcripts.",
 		mark: { src: "/icons/cartesia.svg", masked: true },
 		keysUrl: "https://play.cartesia.ai/keys",
 	},
 	elevenlabs: {
 		name: "ElevenLabs",
-		description: "Sound effects and music generation from a text prompt.",
+		description:
+			"Sound effects and music from a text prompt, and word-timed transcripts.",
 		mark: { src: "/icons/elevenlabs.svg", masked: false },
 		keysUrl: "https://elevenlabs.io/app/settings/api-keys",
 	},

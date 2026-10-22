@@ -1,7 +1,7 @@
 import memoizeOne from "memoize-one";
 import { Element, Node, type Descendant, type Editor, type Path } from "slate";
 import { withoutCaretMarker } from "./constants";
-import { isForeground } from "./guards";
+import { isCaptionable, isForeground } from "./guards";
 import {
 	type ContentElement,
 	type CanvasElement,
@@ -38,6 +38,16 @@ export function previousVisual(
 ): ContentElement | undefined {
 	const at = elements.findIndex((element) => element.id === id);
 	return at < 0 ? undefined : elements.slice(0, at).findLast(isForeground);
+}
+
+/** The element right above `id`, when it has sound to caption. */
+export function captionedElement(
+	elements: CanvasElement[],
+	id: string,
+): ContentElement | undefined {
+	const above =
+		elements[elements.findIndex((element) => element.id === id) - 1];
+	return isCaptionable(above) ? above : undefined;
 }
 
 // Every scene reads its number on every edit; number the document once, not once per scene.

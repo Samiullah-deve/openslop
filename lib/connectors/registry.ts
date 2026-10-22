@@ -4,6 +4,7 @@ import { createCharacterAvatarPlugin } from "./image/plugins/character-avatar";
 import { createReferenceImagesPlugin } from "./image/plugins/reference-images";
 import { createDimensionsPlugin } from "./plugins/dimensions";
 import { buildVisualPlugins } from "./plugins/visual-chain";
+import { createCaptionedMediaPlugin } from "./transcript/plugins/captioned-media";
 import { createSpeakerVoicePlugin } from "./tts/plugins/speaker-voice";
 import { createVideoOutputRulesPlugin } from "./video/plugins/output-rules";
 import { createPreviousVisualPlugin } from "./video/plugins/previous-visual";
@@ -27,6 +28,7 @@ export const DEFAULT_CONNECTOR_REGISTRY: ConnectorRegistry = {
 	},
 	sound: {},
 	music: {},
+	captions: { plugins: [createCaptionedMediaPlugin()] },
 	asset_avatar: {
 		plugins: [
 			createCharacterAvatarPlugin(),

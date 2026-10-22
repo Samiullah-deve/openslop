@@ -22,13 +22,16 @@ export type CommittedVersion = Omit<ElementVersion, "createdAt">;
 
 const NO_VERSIONS: readonly ElementVersion[] = [];
 
-/** One version is these inputs and this result: a retake from unchanged inputs is its own version. */
+const wordsOf = (result: AssetResult): string =>
+	result.textTimestamps?.map((word) => word.text).join(" ") ?? "";
+
+/** One version is these inputs and this result: a retake from unchanged inputs, or an edit to its words, is its own version. */
 export const versionKey = ({
 	inputs,
 	result,
 	pinned,
 }: Pick<CommittedVersion, "inputs" | "result" | "pinned">): string =>
-	`${pinned ? "supplied" : "generated"}:${resultIdentity(result)}:${serializeInputs(inputs)}`;
+	`${pinned ? "supplied" : "generated"}:${resultIdentity(result)}:${wordsOf(result)}:${serializeInputs(inputs)}`;
 
 /** A failed regeneration nulls `result` but leaves `resultInputs`, so gate on both. */
 export const activeVersionIndex = (

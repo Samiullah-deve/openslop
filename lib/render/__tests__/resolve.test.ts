@@ -251,20 +251,77 @@ describe("resolveElements", () => {
 				},
 			});
 
-		it("attaches caption timestamps when captions are enabled project-wide", () => {
+		it("attaches speech's own words when captions are enabled project-wide", () => {
 			const resolved = resolveElements([wrap(elements)], withTimestamps, {
 				captionsEnabled: true,
 			});
-			expect(resolved[0].captionTimestamps).toEqual([
-				{ text: "hello", start: 0, end: 1 },
-			]);
+			expect(resolved[0].captions).toEqual({
+				ownerId: "nar1",
+				firstWord: 0,
+				words: [{ text: "hello", start: 0, end: 1 }],
+			});
 		});
 
-		it("drops caption timestamps when captions are disabled project-wide", () => {
+		it("drops captions when captions are disabled project-wide", () => {
 			const resolved = resolveElements([wrap(elements)], withTimestamps, {
 				captionsEnabled: false,
 			});
-			expect(resolved[0].captionTimestamps).toBeUndefined();
+			expect(resolved[0].captions).toBeUndefined();
+		});
+
+		const heard = [
+			{ text: "one", start: 0, end: 1 },
+			{ text: "two", start: 2, end: 3 },
+		];
+		const snapshots: Record<string, ElementSnapshot> = {
+			vid: makeSnapshot({
+				result: { videoUrl: "https://example.com/v.mp4", durationSec: 5 },
+			}),
+			img: makeSnapshot({
+				result: { imageUrl: "https://example.com/i.png", durationSec: 0 },
+			}),
+			cap: makeSnapshot({ result: { durationSec: 5, textTimestamps: heard } }),
+		};
+		const bySnapshot = (id: string) => snapshots[id] ?? makeSnapshot();
+
+		it("puts a captions element's words on the video right above it, and nothing of its own on the timeline", () => {
+			const resolved = resolveElements(
+				[wrap([makeElement("vid", "video"), makeElement("cap", "captions")])],
+				bySnapshot,
+				{ captionsEnabled: true },
+			);
+			expect(resolved.map((element) => element.id)).toEqual(["vid"]);
+			expect(resolved[0].captions).toEqual({
+				ownerId: "cap",
+				firstWord: 0,
+				words: heard,
+			});
+		});
+
+		it("counts the words a trim cuts, so an edit still lands on the owner's own", () => {
+			const [video] = resolveElements(
+				[
+					wrap([
+						makeElement("vid", "video", { trimStart: "1.5" }),
+						makeElement("cap", "captions"),
+					]),
+				],
+				bySnapshot,
+				{ captionsEnabled: true },
+			);
+			expect(video.captions?.firstWord).toBe(1);
+			expect(video.captions?.words).toEqual([
+				{ text: "two", start: 0.5, end: 1.5 },
+			]);
+		});
+
+		it("captions nothing under an image", () => {
+			const [image] = resolveElements(
+				[wrap([makeElement("img", "image"), makeElement("cap", "captions")])],
+				bySnapshot,
+				{ captionsEnabled: true },
+			);
+			expect(image.captions).toBeUndefined();
 		});
 	});
 

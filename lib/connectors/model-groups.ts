@@ -1,4 +1,5 @@
 import {
+	Captions,
 	Image as ImageIcon,
 	Music,
 	TextBox,
@@ -49,6 +50,12 @@ export const MODEL_GROUPS: ModelGroup[] = [
 		label: "Music",
 		Icon: Music,
 		types: ["music"],
+	},
+	{
+		key: "captions",
+		label: "Captions",
+		Icon: Captions,
+		types: ["transcript"],
 	},
 	{
 		key: "text",

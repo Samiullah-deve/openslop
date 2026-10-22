@@ -72,12 +72,12 @@ export function GenerateButton({
 }
 
 export function ElementGenerateButton() {
-	const { hasPrompt, hasResult, status, generate } = useElementGeneration();
+	const { missingInput, hasResult, status, generate } = useElementGeneration();
 	return (
 		<GenerateButton
 			status={status}
 			hasResult={hasResult}
-			disabled={!hasPrompt || isGenerationActive(status)}
+			disabled={Boolean(missingInput) || isGenerationActive(status)}
 			onGenerate={generate}
 		/>
 	);

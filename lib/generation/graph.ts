@@ -1,5 +1,10 @@
+import isEmpty from "lodash/isEmpty";
 import pick from "lodash/pick";
-import type { ElementType, CanvasElement } from "@/lib/canvas/types";
+import {
+	ELEMENT_TYPES,
+	type ElementType,
+	type CanvasElement,
+} from "@/lib/canvas/types";
 import type { ConnectorRegistry } from "@/lib/connectors/registry";
 import type {
 	AssetConnectorType,
@@ -37,7 +42,13 @@ export type BuildContext = {
 	registry: ConnectorRegistry;
 };
 
-export const hasPrompt = (node: GenerationNode) => Boolean(node.inputs.prompt);
+export function missingInput(node: GenerationNode): string | undefined {
+	const { source } = ELEMENT_TYPES[node.job.elementType];
+	if (source) return isEmpty(node.dependsOn) ? source : undefined;
+	return node.inputs.prompt ? undefined : "Enter a prompt first";
+}
+
+export const isReady = (node: GenerationNode): boolean => !missingInput(node);
 
 /** Every node reachable from `roots`, dependencies before their dependents. */
 export function flattenGraph(roots: GenerationNode[]): GenerationNode[] {

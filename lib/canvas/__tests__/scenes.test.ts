@@ -5,6 +5,7 @@ import type { ContentElement, CanvasBlock, Scene } from "../types";
 import {
 	isScriptEmpty,
 	parentSceneId,
+	captionedElement,
 	previousVisual,
 	sceneIndexOf,
 } from "../scenes";
@@ -106,5 +107,43 @@ describe("previousVisual", () => {
 	it("is nothing for the first visual or an unknown id", () => {
 		expect(previousVisual(elements, "a")).toBeUndefined();
 		expect(previousVisual(elements, "zzz")).toBeUndefined();
+	});
+});
+
+describe("captionedElement", () => {
+	const el = (id: string, type: ContentElement["type"]): ContentElement => ({
+		id,
+		type,
+		children: [{ id: `${id}-t`, type, text: "" }],
+	});
+
+	it("is the video or music right above", () => {
+		const elements = [
+			el("v", "video"),
+			el("c", "captions"),
+			el("m", "music"),
+			el("d", "captions"),
+		];
+		expect(captionedElement(elements, "c")?.id).toBe("v");
+		expect(captionedElement(elements, "d")?.id).toBe("m");
+	});
+
+	it("is nothing under a sound effect, which has no words to caption", () => {
+		expect(
+			captionedElement([el("s", "sound"), el("c", "captions")], "c"),
+		).toBeUndefined();
+	});
+
+	it("is nothing under an image, speech or nothing at all", () => {
+		const elements = [
+			el("c0", "captions"),
+			el("i", "image"),
+			el("c1", "captions"),
+			el("n", "narration"),
+			el("c2", "captions"),
+		];
+		expect(captionedElement(elements, "c0")).toBeUndefined();
+		expect(captionedElement(elements, "c1")).toBeUndefined();
+		expect(captionedElement(elements, "c2")).toBeUndefined();
 	});
 });

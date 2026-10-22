@@ -3,7 +3,7 @@ import {
 	useGenerationQueue,
 	useQueueSelector,
 } from "@/lib/generation/generation-queue-provider";
-import { hasPrompt } from "@/lib/generation/graph";
+import { missingInput } from "@/lib/generation/graph";
 import { staleReason } from "@/lib/generation/stale-reason";
 import { buildNode } from "@/lib/generation/generation-graph";
 import { useBuildContext } from "@/lib/generation/use-build-context";
@@ -20,8 +20,9 @@ export function useGenerate(element: GeneratedElement) {
 	// Built again at the click: a live node's job may lag, see useLiveNode.
 	const generate = useCallback(() => {
 		const current = buildNode(element, buildContext());
-		if (!hasPrompt(current)) {
-			queue.setError(current.id, "Enter a prompt first");
+		const missing = missingInput(current);
+		if (missing) {
+			queue.setError(current.id, missing);
 			return;
 		}
 		queue.enqueueGraph([current]);
@@ -39,7 +40,7 @@ export function useGenerate(element: GeneratedElement) {
 		error: snapshot.error,
 		pinned: snapshot.pinned,
 		staleReason: reason,
-		hasPrompt: hasPrompt(node),
+		missingInput: missingInput(node),
 		hasResult: Boolean(snapshot.result),
 		generate,
 		discard,
