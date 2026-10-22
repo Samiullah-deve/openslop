@@ -22,6 +22,7 @@ import { ElementHistoryButton } from "./element-history-button";
 import { HeaderIconButton } from "./header-icon-button";
 import { ElementGenerationProvider } from "./element-generation-context";
 import { ELEMENT_CONFIGS } from "./element-configs";
+import { SourceBadge } from "./source-badge";
 import {
 	Popover,
 	PopoverContent,
@@ -125,6 +126,7 @@ export function ElementContainer({
 									</span>
 								</span>
 								{config.lead && <config.lead element={element} />}
+								{isSourced(element) && <SourceBadge />}
 								{!schema.hidesModel && (
 									<ModelAttribute
 										element={element}
@@ -152,7 +154,15 @@ export function ElementContainer({
 							</div>
 						</div>
 						{isSourced(element) ? (
-							children
+							<>
+								<div
+									className="rounded-xl bg-element-input px-3 py-2.5 text-start text-label text-muted-foreground select-none"
+									contentEditable={false}
+								>
+									{config.placeholder}
+								</div>
+								{children}
+							</>
 						) : (
 							<div
 								dir={dir}
